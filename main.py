@@ -25,6 +25,8 @@ RETURN_DATE  = (datetime.today() + timedelta(weeks=24)).strftime("%Y-%m-%d")
 data_manager = DataManager()
 search = FlightSearch()
 message = NotificationManager()
+users = data_manager.get_customer_emails()
+# pprint(users)
 
 sheet_data = data_manager.get_sheet_data()
 for i in sheet_data:
@@ -45,3 +47,4 @@ for i in sheet_data:
         pprint(f"Lower price flight found to {sheet_data[0]['city']}!")
         data_manager.update_lowest_price(sheet_data[0]["id"], cheapest_flight.price)
         message.send_notification(cheapest_flight)
+        message.send_emails(cheapest_flight, users)
