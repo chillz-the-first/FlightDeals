@@ -5,7 +5,7 @@ class FlightSearch:
     #This class is responsible for talking to the Flight Search API.
     def __init__(self):
         self.KEY = os.getenv("SERP_KEY")
-        self.endpoint = "https://serpapi.com/search?engine=google_flights"
+        self.endpoint = os.getenv("SERP_ENDPOINT")
 
     def check_flights(self, origin_city_code, destination_city_code, departure_date, return_date, is_direct=True):
         print("Checking flights...")

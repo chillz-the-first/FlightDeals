@@ -3,15 +3,15 @@ import os
 class DataManager:
     #This class is responsible for talking to the Google Sheet.
     def __init__(self):
-        self.GET_URL = "https://api.sheety.co/836e7029d2380b3f3c6e9ca0eb7f38b8/flightDeals/prices/"
-        self.PUT_URL = "https://api.sheety.co/836e7029d2380b3f3c6e9ca0eb7f38b8/flightDeals/prices/"
+        self.FLIGHTS_URL = os.environ.get("SHEETY_FLIGHTS_ENDPOINT")
+        self.USERS_URL = os.environ.get("SHEETY_USERS_ENDPOINT")
         self.SHEETY_KEY = os.getenv("SHEETY_BEARER")
         self.HEADERS = {"Authorization": f"Bearer {self.SHEETY_KEY}"}
         self.destination_data = {}
 
     def get_sheet_data(self):
         print("Getting sheet data.")
-        response = requests.get(url=self.GET_URL, headers=self.HEADERS)
+        response = requests.get(url=self.FLIGHTS_URL, headers=self.HEADERS)
 
         if response.status_code == 200:
             data = response.json()
@@ -28,4 +28,17 @@ class DataManager:
                 "lowestPrice": new_price
             }
         }
-        requests.put(url=f"{self.PUT_URL}/{row_id}",json=new_data,headers=self.HEADERS)
+        requests.put(url=f"{self.FLIGHTS_URL}/{row_id}",json=new_data,headers=self.HEADERS)
+
+    def get_customer_emails(self):
+        print("Getting customer emails.")
+        response = requests.get(url=self.USERS_URL, headers=self.HEADERS)
+
+        if response.status_code != 200:
+            print(f"Error: {response.status_code}")
+            return None
+
+        data = response.json()
+        self.destination_data = data["users"]
+        return self.destination_data
+
