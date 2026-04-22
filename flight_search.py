@@ -8,7 +8,10 @@ class FlightSearch:
         self.endpoint = os.getenv("SERP_ENDPOINT")
 
     def check_flights(self, origin_city_code, destination_city_code, departure_date, return_date, is_direct=True):
-        print("Checking flights...")
+        """
+        Search for flights and return raw JSON, or None on failure.
+        is_direct=True adds stops=1 (direct only) to the query.
+        """
         params = {
             "engine": "google_flights",
             "departure_id": origin_city_code,
@@ -23,11 +26,13 @@ class FlightSearch:
         if is_direct:
             params["stops"] = "1"
 
-        response = requests.get(url=self.endpoint, params=params)
+        print(f"  Searching {'direct' if is_direct else 'indirect'} flights: {origin_city_code} → {destination_city_code}")
 
-        if response.status_code != 200:
-            print(f"Error: {response.status_code}")
-            print(response.text)
+        try:
+            response = requests.get(url=self.endpoint, params=params)
+            response.raise_for_status()     # Raises HTTPError for 4xx/5xx responses
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
             return None
 
         data = response.json()
