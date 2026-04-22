@@ -34,9 +34,10 @@ class DataManager:
         response = requests.get(url=self.USERS_URL, headers=self.HEADERS)
 
         if response.status_code != 200:
-            response.raise_for_status()
+            print(f"Error: {response.status_code}")
             return None
 
-        self.destination_data = response.json()["prices"]
+        data = response.json()
+        self.destination_data = data["users"]
         return self.destination_data
 
