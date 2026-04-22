@@ -26,21 +26,25 @@ data_manager = DataManager()
 search = FlightSearch()
 message = NotificationManager()
 
-data = search.check_flights(ORIGIN_CITY_CODE, "JNB", DEPARTURE_DATE, RETURN_DATE)
+# data = search.check_flights(ORIGIN_CITY_CODE, "JNB", DEPARTURE_DATE, RETURN_DATE)
+# cheapest_flight = flight_data.find_cheapest_flight(data, RETURN_DATE)
 
-cheapest_flight = flight_data.find_cheapest_flight(data, RETURN_DATE)
-"""
 sheet_data = data_manager.get_sheet_data()
 for i in sheet_data:
     print(f"Checking prices for {i["city"]}({i["iataCode"]})")
     destination_city_code = i["iataCode"]
-    data = search.check_flights(ORIGIN_CITY_CODE, destination_city_code, DEPARTURE_DATE, RETURN_DATE)
-
-    cheapest_flight = flight_data.find_cheapest_flight(data, RETURN_DATE)
+    flight = search.check_flights(ORIGIN_CITY_CODE, destination_city_code, DEPARTURE_DATE, RETURN_DATE)
+    # print(f"Getting flights from {origin_city_code} to {destination_city_code}")
+    cheapest_flight = flight_data.find_cheapest_flight(flight, RETURN_DATE)
     # pprint(f"{sheet_data[0]['city']}: R {cheapest_flight.price}")
+
+    if cheapest_flight.price == "N/A":
+        print(f"No direct flight to {i["city"]}({i["iataCode"]}). Looking for indirect flights...")
+        stopover = search.check_flights(ORIGIN_CITY_CODE, destination_city_code, DEPARTURE_DATE, RETURN_DATE, False)
+
+        cheapest_flight = flight_data.find_cheapest_flight(stopover, RETURN_DATE)
 
     if cheapest_flight.price != "N/A" and cheapest_flight.price < sheet_data[0]["lowestPrice"]:
         pprint(f"Lower price flight found to {sheet_data[0]['city']}!")
         data_manager.update_lowest_price(sheet_data[0]["id"], cheapest_flight.price)
         message.send_notification(cheapest_flight)
-"""

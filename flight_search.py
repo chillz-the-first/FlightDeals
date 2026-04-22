@@ -18,9 +18,11 @@ class FlightSearch:
             "type": "1",
             "adults": "1",
             "currency": "ZAR",
-            "stops" : "1",
             "api_key": self.KEY,
         }
+        if is_direct:
+            params["stops"] = "1"
+
         response = requests.get(url=self.endpoint, params=params)
 
         if response.status_code != 200:
@@ -28,26 +30,8 @@ class FlightSearch:
             print(response.text)
             return None
 
-
-        if response.json():
-            print(f"Getting flights from {origin_city_code} to {destination_city_code}")
-            data = response.json()
-            if "error" in data:
-                print(f"API error: {data['error']}")
-                return None
-            return data
-        else:
-            print(f"No direct flights from {origin_city_code} to {destination_city_code}. Looking for indirect flights...")
-            is_direct = False
-            params["stops"] = "0"
-            response = requests.get(url=self.endpoint, params=params)
-            if response.status_code != 200:
-                print(f"Error: {response.status_code}")
-                print(response.text)
-                return None
-
-            data = response.json()
-            if "error" in data:
-                print(f"API error: {data['error']}")
-                return None
-            return data
+        data = response.json()
+        if "error" in data:
+            print(f"API error: {data['error']}")
+            return None
+        return data
