@@ -22,13 +22,13 @@ class FlightSearch:
         }
         response = requests.get(url=self.endpoint, params=params)
 
-        if response.status_code == 200:
-            data = response.json()
-            if "error" in data:
-                print(f"API error: {data['error']}")
-                return None
-            return data
-        else:
+        if response.status_code != 200:
             print(f"Error: {response.status_code}")
             print(response.text)
             return None
+
+        data = response.json()
+        if "error" in data:
+            print(f"API error: {data['error']}")
+            return None
+        return data
