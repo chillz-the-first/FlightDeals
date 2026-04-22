@@ -26,7 +26,10 @@ data_manager = DataManager()
 search = FlightSearch()
 message = NotificationManager()
 
-# data = search.check_flights(ORIGIN_CITY_CODE, "JNB", DEPARTURE_DATE, RETURN_DATE)
+data = search.check_flights(ORIGIN_CITY_CODE, "JNB", DEPARTURE_DATE, RETURN_DATE)
+
+cheapest_flight = flight_data.find_cheapest_flight(data, RETURN_DATE)
+"""
 sheet_data = data_manager.get_sheet_data()
 for i in sheet_data:
     print(f"Checking prices for {i["city"]}({i["iataCode"]})")
@@ -40,3 +43,4 @@ for i in sheet_data:
         pprint(f"Lower price flight found to {sheet_data[0]['city']}!")
         data_manager.update_lowest_price(sheet_data[0]["id"], cheapest_flight.price)
         message.send_notification(cheapest_flight)
+"""
